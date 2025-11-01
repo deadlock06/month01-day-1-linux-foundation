@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python (for potential Python hooks)
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install shellcheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
+      - name: Run shellcheck
+        run: |
+          shellcheck scripts/*.sh src/*.sh tests/*.sh || true
+
+      - name: Run tests
+        run: |
+          chmod +x tests/*.sh
+          bash tests/validate_permissions.sh
+          bash tests/validate_backup.sh
