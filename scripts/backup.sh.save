@@ -1,0 +1,3 @@
+chmod +x scripts/backup.sh
+set -euo pipefail
+SRC_DIR="${1:-./data}"
