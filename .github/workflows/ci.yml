@@ -1,17 +1,18 @@
 name: CI
 
 on:
-  pull_request:
   push:
     branches: [ main ]
+  pull_request:
 
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python (for potential Python hooks)
+      - name: Set up Python (for potential hooks)
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
@@ -28,3 +29,4 @@ jobs:
           chmod +x tests/*.sh
           bash tests/validate_permissions.sh
           bash tests/validate_backup.sh
+
