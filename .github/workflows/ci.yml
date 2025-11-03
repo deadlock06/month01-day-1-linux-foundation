@@ -6,37 +6,27 @@ on:
   pull_request:
 
 jobs:
-  lint-and-test:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-
-      - name: Install shellcheck
-        run: sudo apt-get update && sudo apt-get install -y shellcheck
-
-      - name: Run shellcheck
+      - name: Set up environment
         run: |
-          shellcheck scripts/*.sh src/*.sh tests/*.sh || true
+          sudo apt-get update && sudo apt-get install -y shellcheck make
+          chmod +x src/setup_demo_files.sh scripts/*.sh tests/*.sh
 
-      - name: Prepare environment (debug)
+      - name: Prepare data
         run: |
-          echo "=== Current Directory ==="
-          pwd
-          echo "=== Files ==="
-          ls -R
-          echo "=== Make up ==="
-          make up
-          echo "=== After make up ==="
-          ls -R
+          mkdir -p data backups diagrams
+          ./src/setup_demo_files.sh
+          ls -R data
+
+      - name: Lint scripts
+        run: shellcheck scripts/*.sh src/*.sh tests/*.sh || true
 
       - name: Run tests
         run: |
-          chmod +x tests/*.sh
           bash tests/validate_permissions.sh
           bash tests/validate_backup.sh
 
