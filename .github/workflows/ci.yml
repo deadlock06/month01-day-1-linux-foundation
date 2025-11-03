@@ -1,9 +1,9 @@
 name: CI
 
 on:
-  pull_request:
   push:
     branches: [ main ]
+  pull_request:
 
 jobs:
   lint-and-test:
@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python (for potential Python hooks)
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
@@ -23,9 +23,19 @@ jobs:
         run: |
           shellcheck scripts/*.sh src/*.sh tests/*.sh || true
 
+      - name: Prepare environment (debug)
+        run: |
+          echo "=== Current Directory ==="
+          pwd
+          echo "=== Files ==="
+          ls -R
+          echo "=== Make up ==="
+          make up
+          echo "=== After make up ==="
+          ls -R
+
       - name: Run tests
         run: |
-          make up
           chmod +x tests/*.sh
           bash tests/validate_permissions.sh
           bash tests/validate_backup.sh
